@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 from webbrowser import open_new
+from win32clipboard import GetClipboardData, OpenClipboard
 
 window = Tk()
 window.resizable(width=False, height=False)
@@ -68,15 +69,15 @@ def encrypt():
         t = text[i].lower()
         if t in eng_alphabet:
             s = eng_alphabet.find(t)
-            if s + key >= len(eng_alphabet):
-                s = (key + s) % len(eng_alphabet)
+            if s + abs(key) >= len(eng_alphabet):
+                s = ((key + s) % len(eng_alphabet))
                 text2 += eng_alphabet[s].upper() if text[i].isupper() else eng_alphabet[s]
             else:
                 s += key
                 text2 += eng_alphabet[s].upper() if text[i].isupper() else eng_alphabet[s]
         elif t in rus_alphabet:
             s = rus_alphabet.find(t)
-            if s + key >= len(rus_alphabet):
+            if s + abs(key) >= len(rus_alphabet):
                 s = (key + s) % len(rus_alphabet)
                 text2 += rus_alphabet[s].upper() if text[i].isupper() else rus_alphabet[s]
             else:
@@ -118,29 +119,26 @@ def encrypt_window():
         for j in range(1, 32):
             key = -j
             text2 = ''
-            try:
-                for i in range(len(text)):
-                    t = text[i].lower()
-                    if t in eng_alphabet:
-                        s = eng_alphabet.find(t)
-                        if s + key >= len(eng_alphabet):
-                            s = (key + s) % len(eng_alphabet)
-                            text2 += eng_alphabet[s].upper() if text[i].isupper() else eng_alphabet[s]
-                        else:
-                            s += key
-                            text2 += eng_alphabet[s].upper() if text[i].isupper() else eng_alphabet[s]
-                    elif t in rus_alphabet:
-                        s = rus_alphabet.find(t)
-                        if s + key >= len(rus_alphabet):
-                            s = (key + s) % len(rus_alphabet)
-                            text2 += rus_alphabet[s].upper() if text[i].isupper() else rus_alphabet[s]
-                        else:
-                            s += key
-                            text2 += rus_alphabet[s].upper() if text[i].isupper() else rus_alphabet[s]
+            for i in range(len(text)):
+                t = text[i].lower()
+                if t in eng_alphabet:
+                    s = eng_alphabet.find(t)
+                    if s + abs(key) >= len(eng_alphabet):
+                        s = (key + s) % len(eng_alphabet)
+                        text2 += eng_alphabet[s].upper() if text[i].isupper() else eng_alphabet[s]
                     else:
-                        text2 += text[i]
-            except IndexError:
-                continue
+                        s += key
+                        text2 += eng_alphabet[s].upper() if text[i].isupper() else eng_alphabet[s]
+                elif t in rus_alphabet:
+                    s = rus_alphabet.find(t)
+                    if s + abs(key) >= len(rus_alphabet):
+                        s = (key + s) % len(rus_alphabet)
+                        text2 += rus_alphabet[s].upper() if text[i].isupper() else rus_alphabet[s]
+                    else:
+                        s += key
+                        text2 += rus_alphabet[s].upper() if text[i].isupper() else rus_alphabet[s]
+                else:
+                    text2 += text[i]
             text3 += f' \n{text2} (key: {key})\n'
         text_box2.insert(1.0, text3)
 
@@ -164,6 +162,24 @@ def encrypt_window():
           fg='#32CD32',
           bg='black'
           ).place(x=80, y=120)
+
+    def paste_text():
+        OpenClipboard()
+        p = GetClipboardData()
+        text_box1.delete(1.0, END)
+        text_box1.insert(1.0, p)
+
+    Button(window2,
+           text='Paste',
+           command=paste_text,
+           fg='#32CD32',
+           bg='black',
+           font='AdobeFangsongStd-Regular',
+           activebackground='#32CD32',
+           activeforeground='black',
+           relief='ridge',
+           cursor="hand2"
+           ).place(x=17, y=118)
 
     Button(window2,
            text='-->',
