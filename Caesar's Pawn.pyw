@@ -6,7 +6,7 @@ from win32clipboard import GetClipboardData, OpenClipboard
 window = Tk()
 window.resizable(width=False, height=False)
 window['bg'] = '#8B0000'
-window.title("Caesar's Pawn v1.0")
+window.title("Caesar's Pawn v1.1")
 # коммент со скрытым майнером
 window.geometry('450x320+700+350')
 window.iconbitmap('Data/icon.ico')
